@@ -14,7 +14,6 @@ while True:
     mask = cv2.resize(mask,(img.shape[1],img.shape[0]))
     imgRegion = cv2.bitwise_and(img,mask)
     results = model(imgRegion, stream=True)
-    cv2.rectangle(img,(300,400),(500,600),(0,0,255),5)
     k = cv2.waitKey(1)
     if k == ord("q"):
         break
