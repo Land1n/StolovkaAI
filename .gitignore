@@ -1,2 +1,5 @@
 AI/
 .gitignore
+.vscode/
+.ipynb_checkpoints/
+sort.py
