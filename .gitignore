@@ -4,4 +4,3 @@ AI/
 .ipynb_checkpoints/
 sort.py
 train_yolo/
-runs/

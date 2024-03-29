@@ -32,7 +32,7 @@ def process_video_with_traking(input_video_path):
                     (box[0],box[1]),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
-                    (0,255,255),
+                    (255,255,255),
                     2,
                 )
         
