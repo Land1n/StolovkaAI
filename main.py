@@ -8,7 +8,6 @@ def process_video_with_traking(input_video_path):
     if not cap.isOpened():
         raise Exception('Error: not open video file')
 
-
     while True:
         ret, frame = cap.read()
         if not ret:
