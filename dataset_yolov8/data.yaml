@@ -1,0 +1,11 @@
+names:
+- Staff
+- Buyer
+- Visitor
+- Teacher
+- Student
+nc: 5
+path: dataset_yolov8
+test: images\test
+train: images\train
+val: images\val

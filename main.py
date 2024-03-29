@@ -1,33 +1,49 @@
 from ultralytics import YOLO
 import cv2
-import cvzone
-import math
+import random
 
-model = YOLO('yolov8n.pt')
+def process_video_with_traking(input_video_path):
+    cap = cv2.VideoCapture(input_video_path)
+    classList=['Staff','Buyer','Visitor','Teacher','Student']
+    if not cap.isOpened():
+        raise Exception('Error: not open video file')
 
-video = cv2.VideoCapture(r'C:\Users\User\Desktop\work\Stolovka_AI\AI\video.mp4')
 
-mask = cv2.imread('mask.png')
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        result = model.track(frame,verbose=False)
 
-while True:
-    _, img = video.read()
-    mask = cv2.resize(mask,(img.shape[1],img.shape[0]))
-    imgRegion = cv2.bitwise_and(img,mask)
-    results = model(imgRegion, stream=True)
-    cv2.rectangle(img,(300,400),(500,600),(0,0,255),5)
-    k = cv2.waitKey(1)
-    if k == ord("q"):
-        break
-    for r in results:
-        boxes = r.boxes
-        for box in boxes:
-            cls = int(box.cls[0])
-            if cls == 0:
-                x1, y1, x2, y2 = box.xyxy[0]
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                w, h = x2 - x1, y2 - y1
+        # fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-                cvzone.cornerRect(img, (x1, y1, w, h),l=9)
-                conf = math.ceil((box.conf[0] * 100)) / 100
-                cvzone.putTextRect(img, f'person {conf}', (max(0, x1), max(35, y1)), scale=0.6, thickness=1,offset=3)
-    cv2.imshow('Result',img)
+
+        if result[0].boxes.id !=  None:
+            boxes = result[0].boxes.xyxy.cpu().numpy().astype(int)
+            ids = result[0].boxes.id.cpu().numpy().astype(int)
+            cls = result[0].boxes.cls.cpu().numpy().astype(int)
+            for box,id in zip(boxes,ids):
+                random.seed(int(id))
+                color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+
+                cv2.rectangle(frame,(box[0],box[1]),(box[2],box[3]),color,2)
+                cv2.putText(
+                    frame,
+                    f"id {id} {classList[cls[0]]}",
+                    (box[0],box[1]),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (0,255,255),
+                    2,
+                )
+        
+        cv2.imshow('frame',frame)
+
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+model = YOLO("StolovkaAI_v1n.pt")
+
+process_video_with_traking(r'C:\Users\User\Desktop\work\Stolovka_AI\AI\video_test\test1.mp4')
